@@ -3,7 +3,6 @@ import datetime
 
 from peewee import *
 import utils
-from  error import ValueNotInRange
 
 
 db = SqliteDatabase('worklog.db')
