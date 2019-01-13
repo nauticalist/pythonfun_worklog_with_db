@@ -3,6 +3,7 @@ import datetime
 
 from peewee import *
 import utils
+from  error import ValueNotInRange
 
 
 db = SqliteDatabase('worklog.db')
@@ -28,7 +29,7 @@ class Task(Model):
         view a single task
         """
         print(task.title)
-        print("="*len(task.title))
+        print("=" * len(task.title))
         print("User: {}".format(task.username))
         print("Date: {}".format(task.date))
         print("Time spent: {}".format(task.time_spent))
@@ -69,13 +70,13 @@ class Task(Model):
         """
         Edit and update selected task
         """
-        print("*"*25)
+        print("*" * 25)
         print("Editing task:")
-        print("*"*25)
+        print("*" * 25)
         print(task.title)
-        print("*"*25)
+        print("*" * 25)
         print("New Values:")
-        print("*"*25)
+        print("*" * 25)
         title = input("Title of the task: ")
         username = input("Username: ")
         print("Date of the task")
@@ -92,15 +93,19 @@ class Task(Model):
         print("Task updated")
 
     @classmethod
-    def view_tasks(cls):
+    def view_tasks(cls, tasks=None, title=None):
         """
         View and iterate over tasks
         """
-        tasks = Task.select()
+        if tasks is None:
+            tasks = Task.select()
         total_tasks = len(tasks)
         index = 0
         while index < total_tasks:
             utils.clear_screen()
+            if title:
+                print("{}\n".format(title))
+
             Task.view_task(tasks[index])
             print("\nTask {} of {}\n".format(index + 1, total_tasks))
             if total_tasks == 1:
@@ -129,6 +134,47 @@ class Task(Model):
                 break
             else:
                 print("Invalid entry. Please retry")
+
+    @classmethod
+    def search_by_employee(cls):
+        utils.clear_screen()
+        print("Please enter name of the employee")
+        print("or enter 'q' to return to search menu\n")
+        index = 0
+        total_employees = 0
+        while total_employees == 0:
+            search_string = input("Employee name: ")
+            employees = Task.select(
+                Task.username).where(
+                Task.username.contains(search_string)).distinct()
+            total_employees = len(employees)
+            print("No results found. Please retry")
+            if search_string.lower() == "q":
+                break
+        else:
+            print("\nFound {} employees. Please select one:\n".format(
+                total_employees))
+            for employee in employees:
+                print("{}: {}".format(index + 1, employee.username))
+                index += 1
+            usernumber = None
+            while usernumber is None:
+                try:
+                    user_input = int(input(
+                        "\nPlease enter the number of the employee: "))
+                    if user_input not in range(1, total_employees + 1):
+                        raise ValueError("Can not find the user by id.")
+                except ValueError as err:
+                    print(err)
+                    print("Invalid entry. Please enter a number in the list.")
+                else:
+                    usernumber = user_input
+
+
+            employees_tasks = Task.select().where(
+                Task.username == employees[usernumber - 1].username)
+            return {'tasks': employees_tasks,
+                    'employee': employees[usernumber - 1].username}
 
 
 

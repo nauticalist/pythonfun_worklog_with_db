@@ -13,8 +13,10 @@ def show_main_menu():
     print("""
 a) Add new entry?
 b) View all entries
-c) Search in existing entries
-d) Quit program
+c) View entries by employees
+d) View entries by date
+e) Search in existing entries
+q) Quit program
 """)
 
 

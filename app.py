@@ -16,13 +16,22 @@ if __name__ == '__main__':
         # View all entries
         elif user_input.lower() == "b":
             Task.view_tasks()
-        # Search for entries
+        # View entries by employees
         elif user_input.lower() == "c":
+            pass
+        elif user_input.lower() == "d":
+            pass
+        # Search for entries
+        elif user_input.lower() == "e":
             while user_input != "f":
                 menu.show_search_menu()
                 user_input = input("> ")
                 if user_input == "a":
-                    pass
+                    data = Task.search_by_employee()
+                    if data:
+                        title = "Tasks for employee: {}".format(
+                            data['employee'])
+                        Task.view_tasks(data['tasks'], title)
                 elif user_input == "b":
                     pass
                 elif user_input == "c":
@@ -36,7 +45,7 @@ if __name__ == '__main__':
                 else:
                     print("Invalid entry. Please retry!")
         # Quit
-        elif user_input.lower() == "d":
+        elif user_input.lower() == "q":
             print("Thanks for using worklog app. See you later!")
         else:
             print("Invalid entry. Please retry!")

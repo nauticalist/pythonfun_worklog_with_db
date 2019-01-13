@@ -45,6 +45,6 @@ def get_time_spent():
         try:
             time_spent = int(input("Time spent(rounded minutes): "))
         except ValueError:
-            print("That's not a valid nubmer. Please enter the number",
+            print("That's not a valid number. Please enter the number",
                   "of minutes you spent on this task.")
     return time_spent
