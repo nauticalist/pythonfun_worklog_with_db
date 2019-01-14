@@ -196,8 +196,9 @@ class Task(Model):
         print("s) search for a date")
         print("v) to view all dates")
         print("q) to return to search menu\n")
-        user_input = (">")
-        while user_input != "q":
+        total = 0
+        while total == 0:
+            user_input = input("> ")
             if user_input == "s":
                 date = utils.get_date()
                 date = utils.convert_date_to_string(date)
@@ -206,28 +207,13 @@ class Task(Model):
                     Task.date == date).distinct()
             elif user_input == "v":
                 tasks = Task.select(Task.date).distinct()
-
-        index = 0
-        total = len(tasks)
-        if not tasks:
-            print("No results found. Please retry")
-
-        while total == 0:
-            date_input = input("Please use DD/MM/YYYY: ")
-            if date_input:
-                date = utils.get_date(date_input)
-                date = utils.convert_date_to_string(date)
-                tasks = Task.select(
-                    Task.date).where(
-                    Task.date == date).distinct()
-            else:
-                tasks = Task.select(Task.date).distinct()
-            total = len(tasks)
-            if not tasks:
-                print("No results found. Please retry")
-            if date_input.lower() == "q":
+            elif user_input == "q":
                 break
-        else:
+            else:
+                print("Invalid entry. Please retry!")
+                break
+            index = 0
+            total = len(tasks)
             print("\nFound {} dates. Please select one:\n".format(
                 total))
             for dates in tasks:
@@ -250,6 +236,81 @@ class Task(Model):
                 Task.date == tasks[usernumber - 1].date)
             return {'tasks': tasks_by_date,
                     'date': tasks[usernumber - 1].date}
+
+    @classmethod
+    def search_by_keyword(cls):
+        """
+        Search for task title and notes by keyword
+        """
+        utils.clear_screen()
+        print("Please enter a keyword to search:")
+        print("Enter 'q' to quit!.\n")
+        total = 0
+        while total == 0:
+            keyword = input("Keyword: ")
+            if keyword.lower() == "q":
+                break
+            tasks = Task.select().where(
+                (Task.title.contains(keyword)) |
+                (Task.notes.contains(keyword)))
+            print("No results found... Please retry")
+            total = len(tasks)
+        else:
+            return {'tasks': tasks,
+                    'keyword': keyword,
+                    }
+
+    @classmethod
+    def search_by_time_spend(cls):
+        """
+        Search for tasks by time spent
+        """
+        utils.clear_screen()
+        print("Please enter time spent on task:")
+        total = 0
+        while total == 0:
+            timespent = utils.get_time_spent(
+                input("Time spent(rounded minutes): "))
+            tasks = Task.select().where(Task.time_spent == timespent)
+            print("No results found... Please retry.")
+            total = len(tasks)
+        else:
+            return {'tasks': tasks,
+                    'time_spent': timespent,
+                    }
+
+    @classmethod
+    def search_by_date_range(cls):
+        """
+        List tasks in date range
+        """
+        utils.clear_screen()
+        print("Please enter start and end dates to search for a date range:\n")
+        total = 0
+        while total == 0:
+            start_date = None
+            end_date = None
+            while not start_date:
+                start_date = utils.get_date(
+                    input("Start date (Please use DD/MM/YYYY): "))
+            while not end_date:
+                end_date = utils.get_date(
+                    input("End date (Please use DD/MM/YYYY): "))
+
+            start_date_str = utils.convert_date_to_string(start_date)
+            end_date_str = utils.convert_date_to_string(end_date)
+            tasks = Task.select().where(
+                (Task.date > start_date_str) &
+                (Task.date < end_date_str)).order_by(
+                                            Task.date.desc())
+            print("No results found... Please retry.")
+            total = len(tasks)
+        else:
+            return {
+                'tasks': tasks,
+                'start_date': start_date_str,
+                'end_date': end_date_str,
+            }
 
 
 def initialize():

@@ -8,17 +8,22 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def get_date():
+def get_date(raw_date=None):
     """
     Check date format and return it in DD/MM/YYYY format (string)
     """
     date = None
     while not date:
-        date_input = input("Please use DD/MM/YYYY: ")
         try:
-            date = datetime.strptime(date_input, '%d/%m/%Y')
+            if raw_date:
+                date = datetime.strptime(raw_date, '%d/%m/%Y')
+            else:
+                date_input = input("Please use DD/MM/YYYY: ")
+                date = datetime.strptime(date_input, '%d/%m/%Y')
         except ValueError:
             print("That's not a valid date. Please try again.")
+            if raw_date:
+                break
     return date
 
 
@@ -36,15 +41,20 @@ def convert_string_to_date(date_str):
     return datetime.strptime(date_str, '%d/%m/%Y')
 
 
-def get_time_spent():
+def get_time_spent(minutes=None):
     """
     Check time_spent is a valid integer
     """
     time_spent = None
     while not time_spent:
         try:
-            time_spent = int(input("Time spent(rounded minutes): "))
+            if minutes:
+                time_spent = int(minutes)
+            else:
+                time_spent = int(input("Time spent(rounded minutes): "))
         except ValueError:
             print("That's not a valid number. Please enter the number",
                   "of minutes you spent on this task.")
+            if minutes:
+                break
     return time_spent
