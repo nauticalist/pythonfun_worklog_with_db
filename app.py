@@ -7,7 +7,7 @@ if __name__ == '__main__':
     initialize()
     # Display main menu
     user_input = None
-    while user_input != "d":
+    while user_input != "q":
         menu.show_main_menu()
         user_input = input("> ")
         # Create new task
@@ -18,11 +18,6 @@ if __name__ == '__main__':
             Task.view_tasks()
         # View entries by employees
         elif user_input.lower() == "c":
-            pass
-        elif user_input.lower() == "d":
-            pass
-        # Search for entries
-        elif user_input.lower() == "e":
             while user_input != "f":
                 menu.show_search_menu()
                 user_input = input("> ")
@@ -33,7 +28,11 @@ if __name__ == '__main__':
                             data['employee'])
                         Task.view_tasks(data['tasks'], title)
                 elif user_input == "b":
-                    pass
+                    data = Task.search_by_date()
+                    if data:
+                        title = "Tasks for date: {}".format(
+                            data['date'])
+                        Task.view_tasks(data['tasks'], title)
                 elif user_input == "c":
                     pass
                 elif user_input == "d":

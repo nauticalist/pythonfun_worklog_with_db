@@ -136,18 +136,28 @@ class Task(Model):
 
     @classmethod
     def search_by_employee(cls):
+        """
+        Search tasks by employees
+        Lists matching employees
+        User needs to select one to view employees tasks
+        """
         utils.clear_screen()
-        print("Please enter name of the employee")
+        print("Please enter name of the employee" +
+              "\nor leave blank and press enter to view all employees")
         print("or enter 'q' to return to search menu\n")
         index = 0
         total_employees = 0
         while total_employees == 0:
             search_string = input("Employee name: ")
-            employees = Task.select(
-                Task.username).where(
-                Task.username.contains(search_string)).distinct()
+            if search_string:
+                employees = Task.select(
+                    Task.username).where(
+                    Task.username.contains(search_string)).distinct()
+            else:
+                employees = Task.select(Task.username).distinct()
             total_employees = len(employees)
-            print("No results found. Please retry")
+            if not employees:
+                print("No results found. Please retry")
             if search_string.lower() == "q":
                 break
         else:
@@ -169,13 +179,77 @@ class Task(Model):
                 else:
                     usernumber = user_input
 
-
             employees_tasks = Task.select().where(
                 Task.username == employees[usernumber - 1].username)
             return {'tasks': employees_tasks,
                     'employee': employees[usernumber - 1].username}
 
+    @classmethod
+    def search_by_date(cls):
+        """
+        Search tasks by employees
+        Lists matching employees
+        User needs to select one to view employees tasks
+        """
+        utils.clear_screen()
+        print("Please select an option")
+        print("s) search for a date")
+        print("v) to view all dates")
+        print("q) to return to search menu\n")
+        user_input = (">")
+        while user_input != "q":
+            if user_input == "s":
+                date = utils.get_date()
+                date = utils.convert_date_to_string(date)
+                tasks = Task.select(
+                    Task.date).where(
+                    Task.date == date).distinct()
+            elif user_input == "v":
+                tasks = Task.select(Task.date).distinct()
 
+        index = 0
+        total = len(tasks)
+        if not tasks:
+            print("No results found. Please retry")
+
+        while total == 0:
+            date_input = input("Please use DD/MM/YYYY: ")
+            if date_input:
+                date = utils.get_date(date_input)
+                date = utils.convert_date_to_string(date)
+                tasks = Task.select(
+                    Task.date).where(
+                    Task.date == date).distinct()
+            else:
+                tasks = Task.select(Task.date).distinct()
+            total = len(tasks)
+            if not tasks:
+                print("No results found. Please retry")
+            if date_input.lower() == "q":
+                break
+        else:
+            print("\nFound {} dates. Please select one:\n".format(
+                total))
+            for dates in tasks:
+                print("{}: {}".format(index + 1, dates.date))
+                index += 1
+            usernumber = None
+            while usernumber is None:
+                try:
+                    user_input = int(input(
+                        "\nPlease enter the number of the date: "))
+                    if user_input not in range(1, total + 1):
+                        raise ValueError("Can not find the date by id.")
+                except ValueError as err:
+                    print(err)
+                    print("Invalid entry. Please enter a number in the list.")
+                else:
+                    usernumber = user_input
+
+            tasks_by_date = Task.select().where(
+                Task.date == tasks[usernumber - 1].date)
+            return {'tasks': tasks_by_date,
+                    'date': tasks[usernumber - 1].date}
 
 
 def initialize():
