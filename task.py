@@ -40,6 +40,7 @@ class Task(Model):
         Get user input and create users task
         """
         utils.clear_screen()
+        # Request data from user
         username = input("Enter your username: ")
         utils.clear_screen()
         print("Date of the task")
@@ -52,6 +53,7 @@ class Task(Model):
         utils.clear_screen()
         notes = input("Notes (Optional, you can leave this empty): ")
         utils.clear_screen()
+        # Now create task
         Task.create(username=username,
                     date=date,
                     title=title,
@@ -76,6 +78,7 @@ class Task(Model):
         print("*" * 25)
         print("New Values:")
         print("*" * 25)
+        # Request updated values of task from user
         title = input("Title of the task: ")
         username = input("Username: ")
         print("Date of the task")
@@ -88,6 +91,7 @@ class Task(Model):
         task.date = date
         task.time_spent = time_spent
         task.notes = notes
+        # Now save task to database
         task.save()
         print("Task updated")
 
@@ -96,17 +100,20 @@ class Task(Model):
         """
         View and iterate over tasks
         """
+        # If tasks is none display all tasks
         if tasks is None:
             tasks = Task.select()
         total_tasks = len(tasks)
         index = 0
         while index < total_tasks:
             utils.clear_screen()
+            # If title exists display it for search results
             if title:
                 print("{}\n".format(title))
 
             Task.view_task(tasks[index])
             print("\nTask {} of {}\n".format(index + 1, total_tasks))
+            # If result is only one task omit next and previous options
             if total_tasks == 1:
                 user_choice = input("\n[E]dit [D]elete [M]ain Menu\n> ")
             else:
@@ -149,6 +156,7 @@ class Task(Model):
         total_employees = 0
         while total_employees == 0:
             search_string = input("Employee name: ")
+            # Search employees for search string
             if search_string:
                 employees = Task.select(
                     Task.username).where(
@@ -163,11 +171,13 @@ class Task(Model):
         else:
             print("\nFound {} employees. Please select one:\n".format(
                 total_employees))
+            # List employees with the name that includes the search string
             for employee in employees:
                 print("{}: {}".format(index + 1, employee.username))
                 index += 1
             usernumber = None
             while usernumber is None:
+                # Request user to select one from search results
                 try:
                     user_input = int(input(
                         "\nPlease enter the number of the employee: "))
@@ -178,7 +188,7 @@ class Task(Model):
                     print("Invalid entry. Please enter a number in the list.")
                 else:
                     usernumber = user_input
-
+            # Return tasks of selected user
             employees_tasks = Task.select().where(
                 Task.username == employees[usernumber - 1].username)
             return {'tasks': employees_tasks,
@@ -199,6 +209,7 @@ class Task(Model):
         total = 0
         while total == 0:
             user_input = input("> ")
+            # Search for a date
             if user_input == "s":
                 date = utils.get_date()
                 date = utils.convert_date_to_string(date)
@@ -206,6 +217,7 @@ class Task(Model):
                     Task.date).where(
                     Task.date == date).distinct()
             elif user_input == "v":
+                # View all dates from db
                 tasks = Task.select(Task.date).distinct()
             elif user_input == "q":
                 break
@@ -220,6 +232,7 @@ class Task(Model):
                 print("{}: {}".format(index + 1, dates.date))
                 index += 1
             usernumber = None
+            # Request user to select a date
             while usernumber is None:
                 try:
                     user_input = int(input(
@@ -231,7 +244,7 @@ class Task(Model):
                     print("Invalid entry. Please enter a number in the list.")
                 else:
                     usernumber = user_input
-
+            # return tasks at selected date
             tasks_by_date = Task.select().where(
                 Task.date == tasks[usernumber - 1].date)
             return {'tasks': tasks_by_date,

@@ -29,6 +29,9 @@ class TaskTestCase(unittest.TestCase):
         # Close connection to db.
         test_db.close()
 
+    def test_create_task(self):
+
+
 
 if __name__ == '__main__':
     unittest.main()
