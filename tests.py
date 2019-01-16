@@ -61,6 +61,9 @@ class TaskTestCase(unittest.TestCase):
 
     @unittest.mock.patch('sys.stdout', new_callable=StringIO)
     def test_view_tasks(self, mock_stdout):
+        """
+        Test view tasks method with task and title attributes
+        """
         fake_input = mock.Mock(side_effect=['M'])
         with patch('builtins.input', fake_input):
             title = "Check this title"
@@ -71,10 +74,27 @@ class TaskTestCase(unittest.TestCase):
 
     @unittest.mock.patch('sys.stdout', new_callable=StringIO)
     def test_view_tasks_without_attr(self, mock_stdout):
+        """
+        Test view tasks method without task and title attributes
+        """
         fake_input = mock.Mock(side_effect=['M'])
         with patch('builtins.input', fake_input):
             Task.view_tasks()
             self.assertIn("Test this app", mock_stdout.getvalue())
+
+    @unittest.mock.patch('sys.stdout', new_callable=StringIO)
+    def test_view_tasks_delete_option(self, mock_stdout):
+        """
+        Test view tasks method without task and title attributes
+        """
+        fake_input = mock.Mock(side_effect=['D', 'Y'])
+        with patch('builtins.input', fake_input):
+            Task.view_tasks()
+            self.assertIn("Test this app", mock_stdout.getvalue())
+        check_delete = (Task.select()
+                        .where((Task.title == "Test this app") &
+                               (Task.username == "Kagan Aksoy")))
+        self.assertTrue(check_delete.count() == 0)
 
     def test_create_task(self):
         """
