@@ -45,7 +45,6 @@ class Task(Model):
         utils.clear_screen()
         print("Date of the task")
         date = utils.get_date()
-        date = utils.convert_date_to_string(date)
         utils.clear_screen()
         title = input("Title of the task: ")
         utils.clear_screen()
@@ -83,7 +82,6 @@ class Task(Model):
         username = input("Username: ")
         print("Date of the task")
         date = utils.get_date()
-        date = utils.convert_date_to_string(date)
         time_spent = utils.get_time_spent()
         notes = input("Notes (Optional, you can leave this empty): ")
         task.title = title
@@ -212,7 +210,6 @@ class Task(Model):
             # Search for a date
             if user_input == "s":
                 date = utils.get_date()
-                date = utils.convert_date_to_string(date)
                 tasks = Task.select(
                     Task.date).where(
                     Task.date == date).distinct()
@@ -304,25 +301,23 @@ class Task(Model):
             start_date = None
             end_date = None
             while not start_date:
-                start_date = utils.get_date(
-                    input("Start date (Please use DD/MM/YYYY): "))
+                print("Start Date:")
+                start_date = utils.get_date()
             while not end_date:
-                end_date = utils.get_date(
-                    input("End date (Please use DD/MM/YYYY): "))
+                print("End Date:")
+                end_date = utils.get_date()
 
-            start_date_str = utils.convert_date_to_string(start_date)
-            end_date_str = utils.convert_date_to_string(end_date)
             tasks = Task.select().where(
-                (Task.date > start_date_str) &
-                (Task.date < end_date_str)).order_by(
+                (Task.date > start_date) &
+                (Task.date < end_date)).order_by(
                                             Task.date.desc())
             print("No results found... Please retry.")
             total = len(tasks)
         else:
             return {
                 'tasks': tasks,
-                'start_date': start_date_str,
-                'end_date': end_date_str,
+                'start_date': start_date,
+                'end_date': end_date,
             }
 
 
