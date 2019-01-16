@@ -309,8 +309,7 @@ class Task(Model):
 
             tasks = Task.select().where(
                 (Task.date > start_date) &
-                (Task.date < end_date)).order_by(
-                                            Task.date.desc())
+                (Task.date < end_date)).order_by(Task.date.desc())
             print("No results found... Please retry.")
             total = len(tasks)
         else:
